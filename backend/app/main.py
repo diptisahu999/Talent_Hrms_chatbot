@@ -4,7 +4,7 @@ import contextlib
 from pathlib import Path
 
 import httpx
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Response
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -79,9 +79,29 @@ def create_app() -> FastAPI:
             return HTMLResponse(f.read())
 
     @app.get("/chat", include_in_schema=False)
-    def chat_page():
+    async def chat_page(request: Request):
+        sid = request.query_params.get("sid") or request.query_params.get("sectionId") or request.query_params.get("sectionID")
+
         with open(FRONTEND_DIR / "chat.html", "r", encoding="utf-8") as f:
-            return HTMLResponse(f.read())
+            content = f.read()
+
+        response = HTMLResponse(content)
+
+        if sid:
+            sm = request.app.state.session_manager
+            data = await sm.get(sid)
+            if data:
+                cookie_val = sm.encode_cookie(sid)
+                response.set_cookie(
+                    key=settings.SESSION_COOKIE_NAME,
+                    value=cookie_val,
+                    httponly=True,
+                    samesite="lax",
+                    secure=False,
+                    max_age=settings.SESSION_TTL_SECONDS,
+                    path="/",
+                )
+        return response
 
     return app
 

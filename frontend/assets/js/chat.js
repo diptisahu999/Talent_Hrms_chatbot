@@ -126,7 +126,17 @@ document.getElementById('modeVoice').onclick = ()=>setMode('voice');
 
 async function connect(){
   const proto = location.protocol === 'https:' ? 'wss' : 'ws';
-  ws = new WebSocket(`${proto}://${location.host}/ws/chat`);
+
+  // Extract session ID from current page URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const sid = urlParams.get('sectionID') || urlParams.get('sectionId') || urlParams.get('sid');
+
+  let wsUrl = `${proto}://${location.host}/ws/chat`;
+  if (sid) {
+    wsUrl += `?sectionId=${encodeURIComponent(sid)}`;
+  }
+
+  ws = new WebSocket(wsUrl);
 
   let assistantBubble = null;
 
