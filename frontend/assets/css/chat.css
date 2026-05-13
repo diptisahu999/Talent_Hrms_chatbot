@@ -323,12 +323,27 @@ button:hover {
 /* ===== Mobile ===== */
 
 @media (max-width: 768px) {
+  html, body {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  .app {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
 
   .topbar {
     flex-direction: column;
     justify-content: center;
     align-items: start;
     gap: 10px;
+    border-radius: 0 !important;
+    width: 100%;
+    margin: 0;
   }
 
   .top-actions {
@@ -342,6 +357,9 @@ button:hover {
 
   .composer {
     flex-wrap: wrap;
+    border-radius: 0 !important;
+    width: 100%;
+    margin: 0;
   }
 
   .app.voice-mode .composer {
